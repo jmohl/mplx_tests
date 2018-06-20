@@ -26,7 +26,8 @@ try
     mkdir(sprintf('%s\\rasters',plotting_dir))
     mkdir(sprintf('%s\\avg_fr',plotting_dir))
     mkdir(sprintf('%s\\bar_plots',plotting_dir));
-    mkdir(sprintf('%s\\line_plots',plotting_dir));
+    mkdir(sprintf('%s\\power_plots',plotting_dir));
+    mkdir(sprintf('%s\\hists',plotting_dir));
 end
 %% Example datasets
 %I orginally set this up to run on every control type, but that is unnecessary.
@@ -35,7 +36,7 @@ end
 %comparison of the synthetic data with real data, and evaluate the expected
 %performance of the model on realistic datasets
 
-limited_n_repeats = [5,10,50];
+limited_n_repeats = [10,20,50];
 example_rate_pair = [50,20];
 
 for pair_ind = 1:size(example_rate_pair,1)
@@ -58,8 +59,6 @@ for pair_ind = 1:size(example_rate_pair,1)
         end
     end
 end
-
-clearvars -except mplx_dir results_dir plotting_dir types n_repeats rate_pairs
 
 %% Exploring model power
 %The purpose of these plots is to evaluate the places where the model
@@ -98,8 +97,8 @@ for pair_ind = 1:size(rate_pairs,1)
     ylabel('Posterior for correct model')
     set(gcf,'Position',[100,60,1049,895])
     legend(limited_types);
-    saveas(gcf,sprintf('%s\\line_plots\\%s',plotting_dir,pair_string),'jpg')
-    saveas(gcf,sprintf('%s\\line_plots\\%s',plotting_dir,pair_string),'svg')
+    saveas(gcf,sprintf('%s\\power_plots\\%s',plotting_dir,pair_string),'jpg')
+    saveas(gcf,sprintf('%s\\power_plots\\%s',plotting_dir,pair_string),'svg')
 end
 close all;
 

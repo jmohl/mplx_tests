@@ -43,8 +43,17 @@ end
 for i = 1:length(Bspikes)
     plot([Bspikes(2,i) Bspikes(2,i)],[Bspikes(1,i)-0.4 Bspikes(1,i)+0.4], 'r');
 end
+% 6/12/18 reordering AB spikes by spike count for clarity on AB switching data
+%not working yet
+ABtrs = unique(ABspikes(1,:));
+ABcounts = sortrows([ABtrs',histcounts(ABspikes(1,:))'],2); %[tr, count], sorted by count
+ABspikes_sorted=ABspikes;
+for i=1:length(ABtrs)
+    ABspikes_sorted(1,ABspikes(1,:) == ABcounts(i,1)) = ABtrs(i); %replace with sorted tr number. rep added to make sure data isn't touched twice
+end
+
 for i = 1:length(ABspikes)
-    plot([ABspikes(2,i) ABspikes(2,i)],[ABspikes(1,i)-0.4 ABspikes(1,i)+0.4], 'k');
+    plot([ABspikes_sorted(2,i) ABspikes_sorted(2,i)],[ABspikes_sorted(1,i)-0.4 ABspikes_sorted(1,i)+0.4], 'k');
 end
 ylim([0,n_rep*3+1]);
 xlim([0,1000]); %only plotting 500 ms of time
@@ -56,9 +65,33 @@ set(gcf,'renderer','painters')
 saveas(gcf,sprintf('%s\\rasters\\%s_%dreps_%s',plotting_dir,pair_string,n_rep,this_type),'svg')
 saveas(gcf,sprintf('%s\\rasters\\%s_%dreps_%s',plotting_dir,pair_string,n_rep,this_type),'jpg')
 
-%% plotting mean firing rate and error with sliding window
+%% spike count histograms
+%add spike count histograms
+figure()
+hold on;
+ABcounts = histcounts(ABspikes(1,ABspikes(2,:)<800)); %<800 to make total duration 1 second, for easy conversion to hz
+Acounts = histcounts(Aspikes(1,Aspikes(2,:)<800));
+Bcounts = histcounts(Bspikes(1,Bspikes(2,:)<800));
+bins = 0:5:80;
 
-figure('visible','off');
+histogram(Acounts,bins,'FaceColor',[.75,0,0],'EdgeColor',[.75,0,0],'FaceAlpha',.25)
+histogram(Bcounts,bins,'FaceColor',[0,0,0.75],'EdgeColor',[0,0,.75],'FaceAlpha',.25)
+histogram(ABcounts,bins,'FaceColor',[.25,.25,.25],'EdgeColor','k','FaceAlpha',.25)
+legend('A counts','B counts','AB counts')
+
+xlabel('Spike Count')
+ylabel('Number of trials')
+title(sprintf('spike count histograms: %s \n A=%d Hz B=%d Hz', this_type,aval,bval),'interpreter', 'none')
+hold off;
+set(gcf,'renderer','painters')
+saveas(gcf,sprintf('%s\\hists\\%s_%dreps_%s',plotting_dir,pair_string,n_rep,this_type),'svg')
+saveas(gcf,sprintf('%s\\hists\\%s_%dreps_%s',plotting_dir,pair_string,n_rep,this_type),'jpg')
+
+
+%% plotting mean firing rate and error with sliding window
+%200 ms sliding rectangular window for stats. smoothed with gaussian for
+%plotting purposes only
+figure('visible','on');
 colors = {'b','r','k'};
 transp_colors = [0,.25,.75,.1;.75,0,0,.1;.25,.25,.25,.1]; %colors for transparent confidence intervals
 hold on;
@@ -69,16 +102,19 @@ for i = 1:3
         spikes(trial-(i-1)*n_rep,this_trial+200) = 1; %adding 200 ms to make everything positive time (started at -200 ms in spike generation)
     end
     
-    %all 200 exist to line up spike times with vector indices (negative spike
-    %times exist in data), so this_avg(200) = time 0
-    this_avg = tsmovavg(spikes(:,:)','t',150,1)*1000;
-    SEM = std(this_avg(200:end,:)')/sqrt(n_rep);                                        % Standard Error
-    ts = tinv([0.025  0.975],19);                                                       % T-Score
+    this_avg = movmean(spikes,200,2)*1000;                                   %50 ms sliding window mean
+    SEM = std(this_avg)/sqrt(n_rep);                                        % Standard Error of mean
+    ts = tinv([0.025  0.975],n_rep-1);                                      % T-Score, n_rep - 1 deg of freedom
     CI = [];
-    CI(1,:) = mean(this_avg(200:end,:),2)' + ts(1)*SEM;                                 % .95 Confidence Intervals
-    CI(2,:) = mean(this_avg(200:end,:),2)' + ts(2)*SEM;                                 % .95 Confidence Intervals
-    plot([0:1000;0:1000],CI,'color',transp_colors(i,:))                                 %making transparent confidence intervals
-    plot_handle(i)=plot(0:1000,mean(this_avg(200:end,:),2),colors{i},'LineWidth',2);    %mean line
+    smoo_mean = conv(mean(this_avg,1),gausswin(50),'same')/sum(gausswin(50)); %divide by sum compensate for gausswin summing to more than 1.
+
+    CI(1,:) = smoo_mean + ts(1)*SEM;                                 % .95 Confidence Intervals
+    CI(2,:) = smoo_mean + ts(2)*SEM;                                 % .95 Confidence Intervals
+    %smoothing for plot
+    smoo_CI(1,:) = conv(CI(1,:),gausswin(50),'same')/sum(gausswin(50));
+    smoo_CI(2,:) = conv(CI(2,:),gausswin(50),'same')/sum(gausswin(50));
+    plot([0:1000;0:1000],smoo_CI(:,100:end-100),'color',transp_colors(i,:))                                %making transparent confidence intervals
+    plot_handle(i)=plot(0:1000,smoo_mean(100:end-100),colors{i},'LineWidth',2);    %mean line
 end
 
 legend(plot_handle,'A trials',  'B trials', 'AB trials', 'Location', 'EastOutside')

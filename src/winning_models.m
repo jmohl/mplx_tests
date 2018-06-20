@@ -10,8 +10,6 @@
 %poisson analysis, stacked for different posterior probabilities.
 
 %note:requires that dataset has already been loaded in under name "this_data"
- this_data = readtable(sprintf('%s\\%s\\%s_poi.csv', results_dir,pair_string,this_type));
-%this_data = readtable('C:\Users\jtm47\Documents\Data\Cohen\ST140709crossori0001-sort\cohen_final_V1only.csv');
 counts = cell(4,3);
 labels = {'Single','Average','Outside','Mixture'};
 i=1;
