@@ -2,7 +2,7 @@
 %
 % -------------------
 % Jeff Mohl
-% last edit: 6/7/18
+% last edit: 8/9/18
 % -------------------
 %
 %Description: master script for generating the figures used in the mplx
@@ -102,4 +102,50 @@ for pair_ind = 1:size(rate_pairs,1)
 end
 close all;
 
+%% model power, combined across models (correct model winning % instead of
+% posterior value)
+for pair_ind = 1:size(rate_pairs,1)
+    pair_string = sprintf('%dv%d',rate_pairs(pair_ind,1),rate_pairs(pair_ind,2));
+    figure();
+    hold on;
+    across_models_mat=[];
+    for type= 1:length(limited_types)
+        this_type = limited_types{type};
+        results_matrix = [];
+        for n_rep = n_repeats
+            type_data = readtable(sprintf('%s\\%s\\%s_poi.csv', results_dir,pair_string,this_type));
+            this_data = type_data(find(~cellfun(@isempty,strfind(type_data.CellId,sprintf('N%d-',n_rep)))),:);
+            switch (this_type)
+                case 'Alike'
+                    cor_model = strcmp(this_data.WinModels, 'Single');
+                case 'average'
+                    cor_model = strcmp(this_data.WinModels, 'Average');
+                case 'outside'
+                    cor_model = strcmp(this_data.WinModels, 'Outside');
+                case 'switch'
+                    cor_model = strcmp(this_data.WinModels, 'Mixture');
+            end
+            results_matrix = vertcat(results_matrix,[n_rep, sum(cor_model)/length(cor_model)]);
+        end
+        %plot_tags(type) = plot(results_matrix(:,1),results_matrix(:,2),'-');
+        plot(results_matrix(:,1),results_matrix(:,2),'.-')
+        
+        if ~isempty(across_models_mat) %pooling win rate across types
+            across_models_mat = across_models_mat + .25*results_matrix;
+        else 
+            across_models_mat = .25*results_matrix;
+        end
+    end
+    plot(across_models_mat(:,1),across_models_mat(:,2),'.-k','LineWidth',2)
+    title(pair_string);
+    ylim([0,1])
+    xlim([0,55])
+    xlabel('N trials per condition')
+    ylabel('% correctly classified')
+    set(gcf,'Position',[100,60,1049,895])
+    legend(limited_types,'mean across types');
+    saveas(gcf,sprintf('%s\\power_plots\\%s_winct',plotting_dir,pair_string),'jpg')
+    saveas(gcf,sprintf('%s\\power_plots\\%s_winct',plotting_dir,pair_string),'svg')
+end
+close all;
 
