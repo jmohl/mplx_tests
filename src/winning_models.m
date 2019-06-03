@@ -11,7 +11,7 @@
 
 %note:requires that dataset has already been loaded in under name "this_data"
 counts = cell(4,3);
-labels = {'Single','Average','Outside','Mixture'};
+labels = {'Single','Outside','Average','Mixture'};
 i=1;
 
 %generate a count matrix where each row is a control type and
@@ -37,10 +37,11 @@ end
 %making bar plot
 figure('visible','on');
 b=bar(cell2mat(counts(:,:)),'Stacked');
-set(gca, 'XTick', 1:4, 'XTickLabel', labels);
+set(gca, 'XTick', 1:4, 'XTickLabel', {'Sing','Out','Int','Mix'});
 b(1).FaceColor =[.25,.25,.25]; %greyscale for now
 b(2).FaceColor =[.5,.5,.5];
 b(3).FaceColor =[.75,.75,.75];
+ylim([0 100])
 ylabel('# of conditions categorized')
 legend('Post > 0.95', 'Post > 0.5', 'Post > 0.25','Location','northeastoutside')
 
