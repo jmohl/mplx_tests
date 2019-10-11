@@ -1,4 +1,6 @@
-/data
-/results
+/results/*
+!/results/results_*
+/data/*
+!/data/filename_*
 /doc
 

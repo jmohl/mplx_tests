@@ -1,0 +1,12 @@
+Jeff Mohl
+5/31/2016
+Testing data set, using poisson distribution.
+-These data are fabricated using known poisson distributions in order to test the reliability of various analysis methods.
+
+Description of data:
+Alike = All AB trial types are drawn from the same distribution as A trial types
+average = AB trials are drawn from a single distribution that is the average of A and B mean rates
+wt_average = same as average, except the mean is .75*A + .25 * B
+outside = AB trials = 1.2*A rate
+switch = AB trials are drawn either from A or B distributions, with 50% probabiity
+weak_swich80[90] = same as switch, but the distributions are scaled such that B' = 1.2[1.1]*B and A' = .8[.9]*A
