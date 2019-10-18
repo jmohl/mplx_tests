@@ -34,10 +34,16 @@ gen_synth_binwise <- function(lambdaA,lambdaB=NULL, weight.factor = 1, mplx.rate
             if (runif(1,0,1)<mplx.rate)lambda[bin] <- other.lambda[bin] #picking bin rate based on mplx rate
          }
       }
-
-      spikes[i,]<- c(sapply(lambda,makeSpikes,start=1, end=bw))
+      spikes[i,]<-c(sapply(lambda,makeSpikes,start=1, end=bw))
       
    }
+   #10/11/19
+   #running into a problem here when I'm generating a lot of trials with 0
+   #spikes. In our data we throw out 0 spike trials, but that isn't going to
+   #work if the mean rate is ~1. solution is to just have every trial "start"
+   #with 2 spikes if there are less than 2 spike. Doesn't affect analysis
+   #because spike generation starts at -200 and analysis starts at 0 (time)
+   if(sum(spikes)<2){spikes[1:2]=TRUE}
    #manipulating format to get spike times
    synth.times <-which(spikes==1,arr.ind=TRUE)
    synth.times <- synth.times[order(synth.times[,1]),]

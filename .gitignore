@@ -1,4 +1,4 @@
-/results/*
+/results*
 !/results/results_*
 /data/*
 !/data/filename_*

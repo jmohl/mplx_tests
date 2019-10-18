@@ -41,14 +41,39 @@ setwd(srcPath)
 #   switch-N50-A30-B20-rep75: 
 #   switch control type, 50 trials per triplet, lambdaA=30 lambdaB=20, triplet#75 of 100
 
-lambdaPairs=rbind(c(30,20),c(50,20),c(100,20)) #setting pairs of firing rate differences for separation comparison
-control.type =c("Alike", "switch", "average", "outside", "weak_switch80","weak_switch90","wt_average")
-n_trials_vec=c(5,10,20,30,50) #number of trials to be simulated for each triplet
-repeats = 100   #number of files(triplets) to be generated for each condition
+#VALUES USED IN DATA GENERATION FOR MANUSCRIPT ~12-15 HOURS
+
+# lambdaPairs=rbind(c(20,30),c(20,50),c(20,100)) #setting pairs of firing rate differences for separation comparison
+# control.type =c("Alike", "switch", "average", "outside", "weak_switch80","weak_switch90","wt_average")
+# n_trials_vec=c(5,10,20,30,50) #number of trials to be simulated for each triplet
+# repeats = 100   #number of files(triplets) to be generated for each condition
+# bw=200          #Note:can not run correctly with only one bin, and total trial time must be evenly divisible by bin size
+#                 #also: bw is only use in "mplxd" controls which have variable rates within trials, so not relevant for whole trial analysis
+# start.time=-200 #in milliseconds, used for spike generation. analysis is usually run on 500 ms of data from 0-500, but some pre-0 time is recommended
+# end.time=1000
+
+#VALUES USED TO GENERATE ADDITIONAL POINTS FOR MORE COMPLETE POWER ANALYSIS ~ 18 hours
+
+# lambdaPairs=rbind(c(5,1),c(15,3),c(25,5),c(50,10),c(5,3),c(15,9),c(25,15),c(50,30),c(100,60)) #setting pairs of firing rate differences for separation comparison
+# control.type =c("Alike", "switch", "average", "outside")
+# n_trials_vec=c(5,10,20,30,50) #number of trials to be simulated for each triplet
+# repeats = 100   #number of files(triplets) to be generated for each condition
+# bw=200          #Note:can not run correctly with only one bin, and total trial time must be evenly divisible by bin size
+# #also: bw is only use in "mplxd" controls which have variable rates within trials, so not relevant for whole trial analysis
+# start.time=-200 #in milliseconds, used for spike generation. analysis is usually run on 500 ms of data from 0-500, but some pre-0 time is recommended
+# end.time=1000
+
+#VALUES FOR ANALYSIS TRIAL RUN TO ENSURE CODE WORKING PROPERLY, USING ONLY A SMALL SAMPLE OF DATA, ~5 mins
+
+lambdaPairs=rbind(c(50,20)) #setting pairs of firing rate differences for separation comparison
+control.type =c("Alike", "switch", "average", "outside")
+n_trials_vec=c(30) #number of trials to be simulated for each triplet
+repeats = 10   #number of files(triplets) to be generated for each condition
 bw=200          #Note:can not run correctly with only one bin, and total trial time must be evenly divisible by bin size
-                #also: bw is only use in "mplxd" controls which have variable rates within trials, so not relevant for whole trial analysis
+#also: bw is only use in "mplxd" controls which have variable rates within trials, so not relevant for whole trial analysis
 start.time=-200 #in milliseconds, used for spike generation. analysis is usually run on 500 ms of data from 0-500, but some pre-0 time is recommended
-end.time=1000     
+end.time=1000
+
 
 # run data generation script
 source("synth_script.R")
@@ -64,8 +89,9 @@ source("synth_script.R")
 
 # Define which control datasets should be analyzed, and set parameters:
 #--------------------------------
-lambdaPairs=rbind(c(30,20),c(50,20),c(100,20))
-control.type = c("Alike","switch", "average","outside","weak_switch80","weak_switch90", "wt_average")
+#optional, specify only certain datasets
+#lambdaPairs=rbind(c(30,20),c(50,20),c(100,20))
+#control.type = c("Alike","switch", "average","outside","weak_switch80","weak_switch90", "wt_average")
 start.time=0 #in milliseconds, used for spike generation. analysis is usually run on 500 ms of data from 0-500, but some pre-0 time is recommended
 end.time=600    
 #--------------------------------
