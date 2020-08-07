@@ -1,5 +1,6 @@
 This project generates synthetic data and tests them on the multiplexing analysis (whole trial, poisson distributed, analysis only).
 
+The results of this project are documented in the manuscript "Sensitivity and specificity of a Bayesian single trial analysis for time varying neural signals" published at Neurons, Behavior, Data analysis and Theory, https://arxiv.org/abs/2001.11582
 
 TO RUN PROJECT: 
 -open master_script.R and run from beginning. Options in this script include parameters for data generation as well as types of datasets to generate (matching specific hypotheses/controls described in comments, as well as below). Plotting is done via matlab script, mplx_plotting_master.m, on the final results files (labeled as [hypothesis]_poi.csv in results folder). 
